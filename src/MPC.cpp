@@ -2,6 +2,7 @@
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include "Eigen-3.3/Eigen/Core"
+#include "FG_eval.h"
 
 using CppAD::AD;
 using namespace std;
@@ -17,26 +18,6 @@ double dt = 0;
 // model presented in the classroom matched the previous radius.
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
-
-/**
- * FG_eval class
- */
-class FG_eval {
- public:
-  // Fitted polynomial coefficients
-  Eigen::VectorXd coeffs;
-  FG_eval(Eigen::VectorXd coeffs) { this->coeffs = coeffs; }
-  
-  typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
-  
-  void operator()(ADvector& fg, const ADvector& vars) {
-    // TODO: implement MPC
-    // `fg` a vector of the cost constraints, `vars` is a vector of variable
-    // values (state & actuators)
-    // NOTE: You'll probably go back and forth between this function and
-    // the Solver function below.
-  }
-};
 
 /**
  * MPC class implementation
@@ -85,7 +66,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   }
 
   // Object that computes objective and constraints
-  FG_eval fg_eval(coeffs);
+  FG_eval::FG_eval fg_eval(coeffs);
 
   // TODO: Remove note after implementation
   // NOTE: You don't have to worry about these options
@@ -111,7 +92,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   CppAD::ipopt::solve_result<Dvector> solution;
 
   // Solve the problem
-  CppAD::ipopt::solve<Dvector, FG_eval>(
+  CppAD::ipopt::solve<Dvector, FG_eval::FG_eval>(
       options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
       constraints_upperbound, fg_eval, solution);
 

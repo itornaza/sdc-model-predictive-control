@@ -1,7 +1,9 @@
-#ifndef HELPERS
-#define HELPERS
+#ifndef MPC_HELPERS
+#define MPC_HELPERS
 
 #include <vector>
+#include <cppad/cppad.hpp>
+#include <cppad/ipopt/solve.hpp>
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 
@@ -58,4 +60,4 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
-#endif /* HELPERS */
+#endif /* MPC_HELPERS */
