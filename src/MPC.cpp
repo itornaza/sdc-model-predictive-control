@@ -7,6 +7,10 @@
 using CppAD::AD;
 using namespace std;
 
+/**
+ * MPC hyperparameters
+ */
+
 // TODO: Set the timestep length and duration
 size_t N = 0;
 double dt = 0;
