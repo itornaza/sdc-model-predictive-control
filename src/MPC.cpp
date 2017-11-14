@@ -2,8 +2,8 @@
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include "Eigen-3.3/Eigen/Core"
-#include "constants.h"
 #include "FG_eval.h"
+#include "constants.h"
 
 using CppAD::AD;
 using namespace std;
@@ -31,10 +31,10 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double epsi = state[5];
   
   // Set the number of model variables (includes both states and inputs).
-  size_t n_vars = Cnst.N * 6 + (Cnst.N - 1) * 2;
+  size_t n_vars = Cnst::N * 6 + (Cnst::N - 1) * 2;
   
   // Set the number of constraints
-  size_t n_constraints = Cnst.N * 6;
+  size_t n_constraints = Cnst::N * 6;
   
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
@@ -43,26 +43,33 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     vars[ix] = 0;
   }
 
+  // Initial state values
+  vars[Cnst::x_start] = x;
+  vars[Cnst::y_start] = y;
+  vars[Cnst::psi_start] = y;
+  vars[Cnst::v_start] = v;
+  vars[Cnst::cte_start] = cte;
+  vars[Cnst::epsi_start] = epsi;
+  
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
 
   // Set all non-actuators upper and lowerlimits
   // to the max negative and positive values.
-  for (int ix = 0; ix < Cnst.delta_start; ix++) {
-    vars_lowerbound[ix] = -1.0e19;
-    vars_upperbound[ix] = 1.0e19;
+  for (int ix = 0; ix < Cnst::delta_start; ix++) {
+    vars_lowerbound[ix] = -std::numeric_limits<double>::max();
+    vars_upperbound[ix] = std::numeric_limits<double>::max();
   }
   
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
-  for (int ix = Cnst.delta_start; ix < Cnst.a_start; ix++) {
-    // TODO: Check if Lf term is needed
-    vars_lowerbound[ix] = -0.436332 * Cnst.Lf;
-    vars_upperbound[ix] = 0.436332 * Cnst.Lf;
+  for (int ix = Cnst::delta_start; ix < Cnst::a_start; ix++) {
+    vars_lowerbound[ix] = -0.436332;
+    vars_upperbound[ix] = 0.436332;
   }
   
   // Acceleration/decceleration upper and lower limits.
-  for (int ix = Cnst.a_start; ix < n_vars; ix++) {
+  for (int ix = Cnst::a_start; ix < n_vars; ix++) {
     vars_lowerbound[ix] = -1.0;
     vars_upperbound[ix] = 1.0;
   }
@@ -72,33 +79,31 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // just after
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
-  for (int ix = 0; i < n_constraints; ix++) {
+  for (int ix = 0; ix < n_constraints; ix++) {
     constraints_lowerbound[ix] = 0;
     constraints_upperbound[ix] = 0;
   }
   
   // Set the initial state upper bounds so the solver knows where to start from
-  constraints_lowerbound[Cnst.x_start] = x;
-  constraints_lowerbound[Cnst.y_start] = y;
-  constraints_lowerbound[Cnst.psi_start] = psi;
-  constraints_lowerbound[Cnst.v_start] = v;
-  constraints_lowerbound[Cnst.cte_start] = cte;
-  constraints_lowerbound[Cnst.epsi_start] = epsi;
+  constraints_lowerbound[Cnst::x_start] = x;
+  constraints_lowerbound[Cnst::y_start] = y;
+  constraints_lowerbound[Cnst::psi_start] = psi;
+  constraints_lowerbound[Cnst::v_start] = v;
+  constraints_lowerbound[Cnst::cte_start] = cte;
+  constraints_lowerbound[Cnst::epsi_start] = epsi;
   
   // Set the initial state lower bounds
-  constraints_upperbound[Cnst.x_start] = x;
-  constraints_upperbound[Cnst.y_start] = y;
-  constraints_upperbound[Cnst.psi_start] = psi;
-  constraints_upperbound[Cnst.v_start] = v;
-  constraints_upperbound[Cnst.cte_start] = cte;
-  constraints_upperbound[Cnst.epsi_start] = epsi;
+  constraints_upperbound[Cnst::x_start] = x;
+  constraints_upperbound[Cnst::y_start] = y;
+  constraints_upperbound[Cnst::psi_start] = psi;
+  constraints_upperbound[Cnst::v_start] = v;
+  constraints_upperbound[Cnst::cte_start] = cte;
+  constraints_upperbound[Cnst::epsi_start] = epsi;
   
   // Object that computes objective and constraints
   FG_eval::FG_eval fg_eval(coeffs);
 
-  // TODO: Remove note after implementation
-  // NOTE: You don't have to worry about these options
-  // options for IPOPT solver
+  // Options for IPOPT solver
   string options;
   
   // Uncomment this if you'd like more print information
@@ -112,8 +117,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   options += "Sparse  true        forward\n";
   options += "Sparse  true        reverse\n";
   
-  // TODO: Currently the solver has a maximum time limit of 0.5 seconds.
-  // Change this as you see fit.
+  // The solver has a maximum time limit of 0.5 seconds
   options += "Numeric max_cpu_time          0.5\n";
 
   // Place to return solution
@@ -133,13 +137,13 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Return the first actuator values
   vector<double> result;
-  result.push_back(solution.x[Cnst.delta_start]);
-  result.push_back(solution.x[Cnst.a_start]);
+  result.push_back(solution.x[Cnst::delta_start]);
+  result.push_back(solution.x[Cnst::a_start]);
   
-  // TODO: Debug for loop
-  for (int t = 0; t < Cnst.N - 1; ++t) {
-    result.push_back(solution.x[Cnst.x_start + t + 1]);
-    result.push_back(solution.x[Cnst.y_start + t + 1]);
+  // Return the x and y points to display
+  for (int t = 0; t < Cnst::N; ++t) {
+    result.push_back(solution.x[Cnst::x_start + t]);
+    result.push_back(solution.x[Cnst::y_start + t]);
   }
   
   return result;

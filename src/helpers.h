@@ -1,5 +1,5 @@
-#ifndef MPC_HELPERS
-#define MPC_HELPERS
+#ifndef MPC_HELPERS_
+#define MPC_HELPERS_
 
 #include <vector>
 #include <cppad/cppad.hpp>
@@ -60,4 +60,4 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
-#endif /* MPC_HELPERS */
+#endif /* MPC_HELPERS_ */

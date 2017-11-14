@@ -1,5 +1,5 @@
-#ifndef ION_CONSTANTS_H_
-#define ION_CONSTANTS_H_
+#ifndef MPC_CONSTANTS_H_
+#define MPC_CONSTANTS_H_
 
 namespace Cnst {
 
@@ -17,14 +17,15 @@ namespace Cnst {
   // inputs until a low cost vector of control inputs is found. The length of
   // the vector is determined by N. Thus, N determines the number of variables
   // optimized by the MPC. This is also a major driver of computational cost
-  size_t N = 10;
+  const size_t N = 10;
   
   // Timestep duration i.e. time elapsed between actuations
   // Larger values of dt result in less frequent actuations, which makes it
   // harder to accurately approximate a continuous reference trajectory. This
   // is sometimes called `discritization error`
-  double dt = 0.1;
+  const double dt = 0.12;
   
+  // TODO: Move to --> main
   // System latency from control signals to actuators response
   // In a real car, an actuation command won't execute instantly. There will
   // be a delay as the command propagates through the system. A realistic delay
@@ -33,7 +34,7 @@ namespace Cnst {
   // run a simulation using the vehicle model starting from the current state
   // for the duration of the latency. The resulting state from the simulator
   // is the new initial state for MPC
-  int latency = 0; // TODO: Set to 100 to test with latency and submit
+  // double latency = 0;
 
   // This value assumes the model presented in the classroom is used. It was
   // obtained by measuring the radius formed by running the vehicle in the
@@ -44,9 +45,9 @@ namespace Cnst {
   const double Lf = 2.67;
 
   // References (i.e. our objectives)
-  double ref_cte = 0.0;
-  double ref_epsi = 0.0;
-  double ref_v = 40.0; // TODO: This is in mph
+  const double ref_cte = 0.0;
+  const double ref_epsi = 0.0;
+  const double ref_v = 40.0 * 0.44704; // In m/sec
 
   // Cost coefficients
   // The larger the coefficient of each cost, the lower the value we are willing
@@ -54,14 +55,17 @@ namespace Cnst {
   // be the one with the lower cost value. Hence we heavily penalize the cost
   // functions with large coefficients but we are more reluctant to accept costs
   // with small coefficients
-  int cte_param = 2000;
-  int epsi_param = 2000;
-  int v_param = 1;
-  int delta_param = 5;
-  int a_param = 5;
-  int delta_seq_param = 200;
-  int a_seq_param = 10;
+  const int cte_param = 3000; //2000;
+  const int epsi_param = 3000; //2000;
+  const int v_param = 1;
+  const int delta_param = 6000; //5;
+  const int a_param = 1; //5;
+  const int delta_seq_param = 5000; //200;
+  const int a_seq_param = 1; //10;
 
+  // TODO: Document
+  // 3000, 3000, 1, 3000, 1, 5000, 1
+  
   //-----------------
   // Array indices
   //-----------------
@@ -69,20 +73,20 @@ namespace Cnst {
   // The solver takes all the state variables and actuator variables in a
   // singular vector. Thus, we should establish when one variable starts and
   // another ends to make our lifes easier
-  size_t x_start = 0;
-  size_t y_start = x_start + N;         // x are N
-  size_t psi_start = y_start + N;       // y are N
-  size_t v_start = psi_start + N;       // υ are N
-  size_t cte_start = v_start + N;       // cte are N
-  size_t epsi_start = cte_start + N;    // eψ are N
-  size_t delta_start = epsi_start + N;  // δ are N-1
-  size_t a_start = delta_start + N - 1; // α are N-1
+  const size_t x_start = 0;
+  const size_t y_start = x_start + N;         // x are N
+  const size_t psi_start = y_start + N;       // y are N
+  const size_t v_start = psi_start + N;       // υ are N
+  const size_t cte_start = v_start + N;       // cte are N
+  const size_t epsi_start = cte_start + N;    // eψ are N
+  const size_t delta_start = epsi_start + N;  // δ are N-1
+  const size_t a_start = delta_start + N - 1; // α are N-1
   
   // 100ms latency equals the dt. Hence the fg index can be shifted from 1 to 2
   // to adjust for the latency as shown on the Q&A video. Possible values are:
   // 1 - no latency
   // 2 - latency of 100 msec
-  size_t adjusted_t = 1;
+  const size_t adjusted_t = 2;
 }
 
-#endif /* ION_CONSTANTS_H_ */
+#endif /* MPC_CONSTANTS_H_ */

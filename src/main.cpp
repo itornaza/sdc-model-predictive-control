@@ -9,7 +9,6 @@
 #include "json.hpp"
 #include "MPC.h"
 #include "helpers.h"
-#include "constants.h"
 
 using namespace std;
 
@@ -24,7 +23,7 @@ double rad2deg(double x) { return x * 180 / pi(); }
 int main() {
   uWS::Hub h;
   MPC mpc;
-
+  
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event
@@ -38,6 +37,10 @@ int main() {
         auto j = json::parse(s);
         string event = j[0].get<string>();
         if (event == "telemetry") {
+          
+          // TODO: Use the values from constants.h after resolving symbol issues
+          const double latency = 0.1; // In seconds
+          const double Lf = 2.67;
           
           //-------------------------
           // Get data from simulator
@@ -53,9 +56,10 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-          // TODO: Use for delay calculations
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
+          double cte;
+          double epsi;
           
           //-------------------------
           // Calculate {δ, α}
@@ -77,17 +81,25 @@ int main() {
           // Create the polynomial to fit the given points
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
-          // Calculate the errors
-          double cte = polyeval(coeffs, 0.0);
-          double epsi = -atan(coeffs[1]);
+          // State variables without latency
+          px = 0.0;
+          py = 0.0;
+          psi = 0.0;
+          v *= 0.44704; // Convert to m/sec for the calculations
+          cte = polyeval(coeffs, 0.0);
+          epsi = -atan(coeffs[1]);
           
-          // TODO: Speed in mph, do we need to convert to km/h?
-          
-          // TODO: Add latency into consideration
+          // Latency effect on the state variables
+          px += v * cos(0) * latency;
+          py += v * sin(0) * latency;
+          psi += -(v / Lf) * steer_value * latency;
+          v += throttle_value * latency;
+          cte += + v * sin(epsi) * latency;
+          epsi += -(v / Lf) * steer_value * latency;
           
           // Define the state
           Eigen::VectorXd state(6);
-          state << 0.0, 0.0, 0.0, v, cte, epsi;
+          state << px, py, psi, v, cte, epsi;
           
           // Calculate steering angle and throttle using MPC. Both are in
           // between [-1, 1] and are contained in the returned vars array
@@ -96,8 +108,7 @@ int main() {
           //-------------------------
           // Lines to display
           //-------------------------
-          
-          // TODO: Debug for loop
+         
           // Set up the waypoints/reference yellow line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
@@ -108,7 +119,6 @@ int main() {
             next_y_vals.push_back(polyeval(coeffs, poly_inc * ix));
           }
           
-          // TODO: Debug for loop
           // Set up the MPC predicted trajectory green line
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
@@ -136,8 +146,7 @@ int main() {
           // a negative value implies a left turn. A possible way to get around
           // this is to leave the update equation as is and multiply the
           // steering value by -1 before sending it back to the server
-          // TODO: Again consider Lf?
-          msgJson["steering_angle"] = -vars[0] / (deg2rad(25) * Cnst.Lf);
+          msgJson["steering_angle"] = -vars[0] / (deg2rad(25));
           msgJson["throttle"] = vars[1];
 
           // Add (x,y) points to list here, points are in reference to the
@@ -155,18 +164,9 @@ int main() {
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           cout << msg << endl;
           
-          //********************************************************************
-          // LATENCY
-          //********************************************************************
-          // The purpose is to mimic real driving conditions where
-          // the car does actuate the commands instantly.
-          //
-          // TODO: Remove Notes below after implementation:
-          // -  Feel free to play around with this value but should be to drive
-          //    around the track with 100ms latency.
-          // -  REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
-          //    SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(Cnst.latency));
+          // Latency simulation by sleeping!
+          this_thread::sleep_for(chrono::milliseconds(
+                                 static_cast<int>(latency * 1000)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // End - Telemetry
       } else {
