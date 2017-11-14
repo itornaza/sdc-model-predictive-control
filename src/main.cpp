@@ -23,8 +23,6 @@ double rad2deg(double x) { return x * 180 / pi(); }
 
 int main() {
   uWS::Hub h;
-
-  // MPC is initialized here!
   MPC mpc;
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -56,12 +54,11 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
           // TODO: Use for delay calculations
-          // TODO: Steering angle direction considerations from project specs
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
           
           //-------------------------
-          // Calculate α and δ
+          // Calculate {δ, α}
           //-------------------------
           
           // Transform points (ptsx, ptsy) from map to car coordinates

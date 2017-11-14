@@ -39,8 +39,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
-  for (int i = 0; i < n_vars; i++) {
-    vars[i] = 0;
+  for (int ix = 0; ix < n_vars; ix++) {
+    vars[ix] = 0;
   }
 
   Dvector vars_lowerbound(n_vars);
@@ -48,23 +48,23 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Set all non-actuators upper and lowerlimits
   // to the max negative and positive values.
-  for (int i = 0; i < Cnst.delta_start; i++) {
-    vars_lowerbound[i] = -1.0e19;
-    vars_upperbound[i] = 1.0e19;
+  for (int ix = 0; ix < Cnst.delta_start; ix++) {
+    vars_lowerbound[ix] = -1.0e19;
+    vars_upperbound[ix] = 1.0e19;
   }
   
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
-  for (int i = Cnst.delta_start; i < Cnst.a_start; i++) {
+  for (int ix = Cnst.delta_start; ix < Cnst.a_start; ix++) {
     // TODO: Check if Lf term is needed
-    vars_lowerbound[i] = -0.436332 * Cnst.Lf;
-    vars_upperbound[i] = 0.436332 * Cnst.Lf;
+    vars_lowerbound[ix] = -0.436332 * Cnst.Lf;
+    vars_upperbound[ix] = 0.436332 * Cnst.Lf;
   }
   
   // Acceleration/decceleration upper and lower limits.
-  for (int i = Cnst.a_start; i < n_vars; i++) {
-    vars_lowerbound[i] = -1.0;
-    vars_upperbound[i] = 1.0;
+  for (int ix = Cnst.a_start; ix < n_vars; ix++) {
+    vars_lowerbound[ix] = -1.0;
+    vars_upperbound[ix] = 1.0;
   }
   
   // Lower and upper limits for constraints
@@ -72,9 +72,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // just after
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
-  for (int i = 0; i < n_constraints; i++) {
-    constraints_lowerbound[i] = 0;
-    constraints_upperbound[i] = 0;
+  for (int ix = 0; i < n_constraints; ix++) {
+    constraints_lowerbound[ix] = 0;
+    constraints_upperbound[ix] = 0;
   }
   
   // Set the initial state upper bounds so the solver knows where to start from
