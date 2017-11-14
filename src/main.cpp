@@ -6,9 +6,10 @@
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
+#include "json.hpp"
 #include "MPC.h"
 #include "helpers.h"
-#include "json.hpp"
+#include "constants.h"
 
 using namespace std;
 
@@ -39,6 +40,14 @@ int main() {
         auto j = json::parse(s);
         string event = j[0].get<string>();
         if (event == "telemetry") {
+          
+          //-------------------------
+          // Get data from simulator
+          //-------------------------
+          
+          // Detail listing of simulator responses at:
+          // https://github.com/udacity/CarND-MPC-Project/blob/master/DATA.md
+          
           // j[1] is the data JSON object
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
@@ -47,16 +56,21 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
           // TODO: Use for delay calculations
+          // TODO: Steering angle direction considerations from project specs
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
           
-          // Transform points from map coordinates to car coordinates
+          //-------------------------
+          // Calculate α and δ
+          //-------------------------
+          
+          // Transform points (ptsx, ptsy) from map to car coordinates
           for (int ix = 0; ix < ptsx.size(); ++ix) {
-            // Shift car reference angle to 90 degrees
+            // Shift car reference angle to 90 degrees clockwise
             double shift_x = ptsx[ix] - px;
             double shift_y = ptsy[ix] - py;
-            ptsx[ix] = shift_x * cos(0.0 - psi) - shift_y * sin(0.0 - psi);
-            ptsy[ix] = shift_x * sin(0.0 - psi) + shift_y * cos(0.0 - psi);
+            ptsx[ix] = shift_x * cos(-psi) - shift_y * sin(-psi);
+            ptsy[ix] = shift_x * sin(-psi) + shift_y * cos(-psi);
           }
           
           // Transform ptsx and ptsy arrays into VectorXd
@@ -70,20 +84,23 @@ int main() {
           double cte = polyeval(coeffs, 0.0);
           double epsi = -atan(coeffs[1]);
           
+          // TODO: Speed in mph, do we need to convert to km/h?
+          
+          // TODO: Add latency into consideration
+          
           // Define the state
           Eigen::VectorXd state(6);
           state << 0.0, 0.0, 0.0, v, cte, epsi;
           
-          /*
-           * TODO: Calculate steering angle and throttle using MPC.
-           *
-           * Both are in between [-1, 1].
-           *
-           */
-          
-          // Get the vars from the solver
+          // Calculate steering angle and throttle using MPC. Both are in
+          // between [-1, 1] and are contained in the returned vars array
           auto vars = mpc.Solve(state, coeffs);
           
+          //-------------------------
+          // Lines to display
+          //-------------------------
+          
+          // TODO: Debug for loop
           // Set up the waypoints/reference yellow line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
@@ -94,6 +111,7 @@ int main() {
             next_y_vals.push_back(polyeval(coeffs, poly_inc * ix));
           }
           
+          // TODO: Debug for loop
           // Set up the MPC predicted trajectory green line
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
@@ -105,16 +123,24 @@ int main() {
             }
           }
           
+          //-------------------------
+          // Send data to simulator
+          //-------------------------
+          
           // Prepare the json message
           json msgJson;
           
-          // TODO: Make global because it is redifined in the MPC as well
-          double Lf = 2.67;
-          
-          // Divide by deg2rad(25) before sending the steering value back.
+          // Steering angle
+          // 1. Divide by deg2rad(25) before sending the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25)]
           // instead of [-1, 1]
-          msgJson["steering_angle"] = vars[0] / (deg2rad(25) * Lf);
+          // 2. If δ is positive we rotate counter-clockwise, or turn left.
+          // In the simulator however, a positive value implies a right turn and
+          // a negative value implies a left turn. A possible way to get around
+          // this is to leave the update equation as is and multiply the
+          // steering value by -1 before sending it back to the server
+          // TODO: Again consider Lf?
+          msgJson["steering_angle"] = -vars[0] / (deg2rad(25) * Cnst.Lf);
           msgJson["throttle"] = vars[1];
 
           // Add (x,y) points to list here, points are in reference to the
@@ -143,7 +169,7 @@ int main() {
           //    around the track with 100ms latency.
           // -  REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           //    SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(100));
+          this_thread::sleep_for(chrono::milliseconds(Cnst.latency));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // End - Telemetry
       } else {

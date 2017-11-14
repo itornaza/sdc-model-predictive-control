@@ -31,10 +31,10 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double epsi = state[5];
   
   // Set the number of model variables (includes both states and inputs).
-  size_t n_vars = N * 6 + (N - 1) * 2;
+  size_t n_vars = Cnst.N * 6 + (Cnst.N - 1) * 2;
   
   // Set the number of constraints
-  size_t n_constraints = 0;
+  size_t n_constraints = Cnst.N * 6;
   
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
@@ -48,21 +48,21 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Set all non-actuators upper and lowerlimits
   // to the max negative and positive values.
-  for (int i = 0; i < delta_start; i++) {
+  for (int i = 0; i < Cnst.delta_start; i++) {
     vars_lowerbound[i] = -1.0e19;
     vars_upperbound[i] = 1.0e19;
   }
   
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
-  for (int i = delta_start; i < a_start; i++) {
+  for (int i = Cnst.delta_start; i < Cnst.a_start; i++) {
     // TODO: Check if Lf term is needed
-    vars_lowerbound[i] = -0.436332 * Lf;
-    vars_upperbound[i] = 0.436332 * Lf;
+    vars_lowerbound[i] = -0.436332 * Cnst.Lf;
+    vars_upperbound[i] = 0.436332 * Cnst.Lf;
   }
   
   // Acceleration/decceleration upper and lower limits.
-  for (int i = a_start; i < n_vars; i++) {
+  for (int i = Cnst.a_start; i < n_vars; i++) {
     vars_lowerbound[i] = -1.0;
     vars_upperbound[i] = 1.0;
   }
@@ -78,20 +78,20 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   }
   
   // Set the initial state upper bounds so the solver knows where to start from
-  constraints_lowerbound[x_start] = x;
-  constraints_lowerbound[y_start] = y;
-  constraints_lowerbound[psi_start] = psi;
-  constraints_lowerbound[v_start] = v;
-  constraints_lowerbound[cte_start] = cte;
-  constraints_lowerbound[epsi_start] = epsi;
+  constraints_lowerbound[Cnst.x_start] = x;
+  constraints_lowerbound[Cnst.y_start] = y;
+  constraints_lowerbound[Cnst.psi_start] = psi;
+  constraints_lowerbound[Cnst.v_start] = v;
+  constraints_lowerbound[Cnst.cte_start] = cte;
+  constraints_lowerbound[Cnst.epsi_start] = epsi;
   
   // Set the initial state lower bounds
-  constraints_upperbound[x_start] = x;
-  constraints_upperbound[y_start] = y;
-  constraints_upperbound[psi_start] = psi;
-  constraints_upperbound[v_start] = v;
-  constraints_upperbound[cte_start] = cte;
-  constraints_upperbound[epsi_start] = epsi;
+  constraints_upperbound[Cnst.x_start] = x;
+  constraints_upperbound[Cnst.y_start] = y;
+  constraints_upperbound[Cnst.psi_start] = psi;
+  constraints_upperbound[Cnst.v_start] = v;
+  constraints_upperbound[Cnst.cte_start] = cte;
+  constraints_upperbound[Cnst.epsi_start] = epsi;
   
   // Object that computes objective and constraints
   FG_eval::FG_eval fg_eval(coeffs);
@@ -133,11 +133,13 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Return the first actuator values
   vector<double> result;
-  result.push_back(solution.x[delta_start]);
-  result.push_back(solution.x[a_start]);
-  for (int t = 0; t < N - 1; ++t) {
-    result.push_back(solution.x[x_start + t + 1]);
-    result.push_back(solution.x[y_start + t + 1]);
+  result.push_back(solution.x[Cnst.delta_start]);
+  result.push_back(solution.x[Cnst.a_start]);
+  
+  // TODO: Debug for loop
+  for (int t = 0; t < Cnst.N - 1; ++t) {
+    result.push_back(solution.x[Cnst.x_start + t + 1]);
+    result.push_back(solution.x[Cnst.y_start + t + 1]);
   }
   
   return result;
