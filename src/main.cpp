@@ -82,20 +82,26 @@ int main() {
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
           // State variables without latency
-          px = 0.0;
+          px = 0.0;   // New origin at (0,0)
           py = 0.0;
           psi = 0.0;
           v *= 0.44704; // Convert to m/sec for the calculations
-          cte = polyeval(coeffs, 0.0);
+          cte = coeffs[0]; // TODO: same as polyeval(coeffs, 0.0);
           epsi = -atan(coeffs[1]);
           
-          // Latency effect on the state variables
-          px += v * cos(0) * latency;
-          py += v * sin(0) * latency;
-          psi += -(v / Lf) * steer_value * latency;
+          // Adjust the state variables to account for latency
+          
+          // If δ is positive we rotate counter-clockwise, or turn left.
+          // In the simulator however, a positive value implies a right turn and
+          // a negative value implies a left turn. Thus, we multiply the
+          // steering value by -1 for compatibility with the equations
+          
+          px = v * latency; // cos(0.0) = 1.0
+          py = 0.0; // sin(0.0) = 0.0
+          psi = v * (-steer_value) * latency / Lf;
           v += throttle_value * latency;
-          cte += + v * sin(epsi) * latency;
-          epsi += -(v / Lf) * steer_value * latency;
+          cte += v * sin(epsi) * latency;
+          epsi += v * (-steer_value) * latency / Lf;
           
           // Define the state
           Eigen::VectorXd state(6);
@@ -138,15 +144,10 @@ int main() {
           json msgJson;
           
           // Steering angle
-          // 1. Divide by deg2rad(25) before sending the steering value back.
+          // Divide by deg2rad(25) before sending the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25)]
           // instead of [-1, 1]
-          // 2. If δ is positive we rotate counter-clockwise, or turn left.
-          // In the simulator however, a positive value implies a right turn and
-          // a negative value implies a left turn. A possible way to get around
-          // this is to leave the update equation as is and multiply the
-          // steering value by -1 before sending it back to the server
-          msgJson["steering_angle"] = -vars[0] / (deg2rad(25));
+          msgJson["steering_angle"] = vars[0] / (deg2rad(25));
           msgJson["throttle"] = vars[1];
 
           // Add (x,y) points to list here, points are in reference to the

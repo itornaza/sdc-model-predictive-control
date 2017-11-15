@@ -137,7 +137,7 @@ public:
         y1 - (y0 + v0 * CppAD::sin(psi0) * Cnst::dt); // = 0
       
       fg[Cnst::adjusted_t + Cnst::psi_start + t] =
-        psi1 - (psi0 + (v0 / Cnst::Lf) * delta0 * Cnst::dt); // = 0
+        psi1 - (psi0 + v0 * (-delta0) * Cnst::dt / Cnst::Lf); // = 0
       
       fg[Cnst::adjusted_t + Cnst::v_start + t] =
         v1 - (v0 + a0 * Cnst::dt); // = 0
@@ -146,7 +146,7 @@ public:
         cte1 - (f0 - y0 + (v0 * CppAD::sin(epsi0)) * Cnst::dt); // = 0
       
       fg[Cnst::adjusted_t + Cnst::epsi_start + t] =
-        epsi1 - (psi0 - psides0 + (v0 / Cnst::Lf) * delta0 * Cnst::dt); // = 0
+        epsi1 - (psi0 - psides0 + v0 * (-delta0) * Cnst::dt / Cnst::Lf); // = 0
     }
   }
 };

@@ -47,8 +47,8 @@ namespace Cnst {
   // References (i.e. our objectives)
   const double ref_cte = 0.0;
   const double ref_epsi = 0.0;
-  const double ref_v = 40.0 * 0.44704; // In m/sec
-
+  const double ref_v = 40.0 * 0.44704; // Converted from mph to m/sec
+  
   // Cost coefficients
   // The larger the coefficient of each cost, the lower the value we are willing
   // to accept on the respective error. Notice, that the optimum solution will
@@ -58,13 +58,17 @@ namespace Cnst {
   const int cte_param = 3000; //2000;
   const int epsi_param = 3000; //2000;
   const int v_param = 1;
-  const int delta_param = 6000; //5;
+  const int delta_param = 7000; //5;
   const int a_param = 1; //5;
-  const int delta_seq_param = 5000; //200;
+  const int delta_seq_param = 6000; //200;
   const int a_seq_param = 1; //10;
 
   // TODO: Document
-  // 3000, 3000, 1, 3000, 1, 5000, 1
+  // 3000, 3000, 1, 6000, 1, 5000, 1 -- 1st round ok but then crashes
+  // 3000, 3000, 1, 2000, 1, 3000, 1 -- Crashes on first round
+  // 3000, 3000, 1, 2000, 1, 5000, 1 -- Crashes on first round
+  // 3000, 3000, 1, 7000, 1, 3000, 1 -- Crashes on first round
+  // 3000, 3000, 1, 7000, 1, 6000, 1 -- 1st round ok but then crashes, better
   
   //-----------------
   // Array indices
