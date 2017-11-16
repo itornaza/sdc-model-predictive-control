@@ -30,7 +30,7 @@ e\psi_t = \psi_{t} +  \psi^des_t
 
 cte_t = f(x_t) - y_t
 
-![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20%5Ctextminus%20%5Cpsides_t)
+![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20%2B%20%20%5Cpsi%5Edes_t)
 
 ![img](http://latex.codecogs.com/svg.latex?%5Cpsides_t%20%3D%20arctan(f%5Cprime(x_t)))
 
