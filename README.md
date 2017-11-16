@@ -8,7 +8,7 @@ The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896
 
 Kinematic model
 x_t+1 = x_t + υ_t * cos(ψ_t) * dt
-x_{t+1} = x_t + υ_t * cos(ψ_t) * dt
+x_t+1 = x_t + v_t * cos(\psi_t) * dt
 
 y_t+1 = y_t + υ_t * sin(ψ_t) * dt
 ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
@@ -27,7 +27,7 @@ Error calculations at t+1
 eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
 cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 
-![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D+%3D+x_t+%2B+%CF%85_t+%2A+cos%28%CF%88_t%29+%2A+dt)
+![img](http://latex.codecogs.com/svg.latex?x_t%2B1+%3D+x_t+%2B+v_t+%2A+cos%28%5Cpsi_t%29+%2A+dt)
 
 
 ## Dependencies
