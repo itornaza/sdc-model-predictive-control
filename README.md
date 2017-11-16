@@ -7,30 +7,6 @@ This project implements Model Predictive Control to drive the car around the tra
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
 Kinematic model
-x_t+1 = x_t + υ_t * cos(ψ_t) * dt
-x_{t+1} = x_t + v_t * cos(\psi_t) * dt
-
-y_t+1 = y_t + υ_t * sin(ψ_t) * dt
-y_{t+1} = y_t + v_t * sin(\psi_t) * dt
-
-ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
-\psi_{t+1} = \psi_t + \frac{v_t}{L_f} * \delta_t * dt
-
-υ_t+1 = υ_t + α * dt
-v_{t+1} = v_t + \alpha * dt
-
-Polynomial of the 3rd order
-f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
-f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
-
-Error calculations at t
-eψ_t = ψ_t - ψdes_t
-ψdes_t = arctan(f'(x_t))
-cte_t = f(x_t) - y_t
-
-Error calculations at t+1
-eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
-cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 
 ![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D%20%3D%20x_t%20%2B%20v_t%20*%20cos(%5Cpsi_t)%20*%20dt)
 
@@ -40,11 +16,29 @@ cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 
 ![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
 
-![img](http://latex.codecogs.com/svg.latex?)
-![img](http://latex.codecogs.com/svg.latex?)
+Polynomial of the 3rd order
+f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
+f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
+
+f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
+f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
+
+![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
+
+![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
+
+Error calculations at t
+eψ_t = ψ_t - ψdes_t
+ψdes_t = arctan(f'(x_t))
+cte_t = f(x_t) - y_t
 
 ![img](http://latex.codecogs.com/svg.latex?)
 ![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?)
+
+Error calculations at t+1
+eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
+cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 ![img](http://latex.codecogs.com/svg.latex?)
 ![img](http://latex.codecogs.com/svg.latex?)
 
