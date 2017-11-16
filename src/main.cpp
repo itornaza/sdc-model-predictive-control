@@ -81,21 +81,41 @@ int main() {
           // Create the polynomial to fit the given points
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
+          /*
+          Kinematic model
+          x_t+1 = x_t + υ_t * cos(ψ_t) * dt
+          y_t+1 = y_t + υ_t * sin(ψ_t) * dt
+          ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
+          υ_t+1 = υ_t + α * dt
+
+          Polynomial of the 3rd order
+          f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
+          f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
+
+          Error calculations at t
+          eψ_t = ψ_t - ψdes_t
+          ψdes_t = arctan(f'(x_t))
+          cte_t = f(x_t) - y_t
+
+          Error calculations at t+1
+          eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
+          cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
+          */
+          
           // State variables without latency
-          px = 0.0;   // New origin at (0,0)
+          // Substituting to the equations above with px = py = ψ = 0
+          px = 0.0;
           py = 0.0;
           psi = 0.0;
           v *= 0.44704; // Convert to m/sec for the calculations
           cte = coeffs[0]; // TODO: same as polyeval(coeffs, 0.0);
           epsi = -atan(coeffs[1]);
           
-          // Adjust the state variables to account for latency
-          
-          // If δ is positive we rotate counter-clockwise, or turn left.
+          // Adjust the state variables to account for latency (as dt)
+          // NOTE: If δ is positive we rotate counter-clockwise, or turn left.
           // In the simulator however, a positive value implies a right turn and
           // a negative value implies a left turn. Thus, we multiply the
-          // steering value by -1 for compatibility with the equations
-          
+          // steering value by -1 for compatibility with the above equations
           px = v * latency; // cos(0.0) = 1.0
           py = 0.0; // sin(0.0) = 0.0
           psi = v * (-steer_value) * latency / Lf;

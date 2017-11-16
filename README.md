@@ -2,9 +2,33 @@
 
 ## Introduction
 
-This project implements Model Predictive Control to drive the car around the track. This time however the cross track error is not provided by the simulator and is calculated from the code! Additionally, there's a 100 millisecond latency between actuations commands on top of the connection latency.
+This project implements Model Predictive Control to drive the car around the track. The cross track error is not provided by the simulator and is calculated from the code. Additionally, there's a 100 millisecond latency between actuations commands on top of the connection latency.
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
+
+Kinematic model
+x_t+1 = x_t + υ_t * cos(ψ_t) * dt
+x_{t+1} = x_t + υ_t * cos(ψ_t) * dt
+
+y_t+1 = y_t + υ_t * sin(ψ_t) * dt
+ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
+υ_t+1 = υ_t + α * dt
+
+Polynomial of the 3rd order
+f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
+f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
+
+Error calculations at t
+eψ_t = ψ_t - ψdes_t
+ψdes_t = arctan(f'(x_t))
+cte_t = f(x_t) - y_t
+
+Error calculations at t+1
+eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
+cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
+
+![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D+%3D+x_t+%2B+%CF%85_t+%2A+cos%28%CF%88_t%29+%2A+dt)
+
 
 ## Dependencies
 
