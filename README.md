@@ -6,6 +6,8 @@ This project implements Model Predictive Control to drive the car around the tra
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
+Here is a [youtube video](**TODO**) showing the car moving around the track under the MPC controller. The yellow line is the desired trajectory and the green line is the MPC optimum trajectory.
+
 ## MPC Overview
 
 The Model Predictive Controller calculates simulated actuator inputs, predicts the resulting trajectories and selects the trajectory with the minimum cost. In order to do so, It uses as input the desired trajectory and the current state of the vehicle. In a way, MPC reduces the control problem to an optimization problem of finding the best trajectory candidate.
@@ -27,6 +29,8 @@ Where,
 *N* is the number of steps in the prediction horizon. It determines the number of variables optimized by the MPC and is a major driver of computational cost
 
 *dt* is the timestep duration i.e. time elapsed between actuations. Larger values of dt result in less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory
+
+During the implementation various values for dt were tested spanning from 0.8 to 1.4. However, **TODO** was found to help the model behave better than the other values.
 
 ## Kinematic model
 
