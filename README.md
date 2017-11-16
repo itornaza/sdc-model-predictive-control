@@ -6,15 +6,9 @@ This project implements Model Predictive Control to drive the car around the tra
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
-## Controller overview
-
-## Polynomial of the 3rd order
-
-![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
-
-![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
-
 ## Kinematic model
+
+In order to implement the controller we first have to define a model of the vehicle dynamics and constraints. In this case we use a simple kinematic model that ignores tire forces, gravity and mass. While this simplification reduces the accuracy of the motion prediction, it makes it more tracktable. In addition, it is a good approximation of the actual vehicle dynamics in low and moderate speeds.
 
 ### State
 
@@ -23,14 +17,34 @@ The state vector is described contains the following variables: [x, y, ψ, v, ct
 *y* is  the position of the car on the y-axis
 *ψ* is the orientation of the car
 *v* is the speed of the car
-*cte* is the ctoss-track error
-*eψ* is the orientation error
+*cte* is the ctoss-track error which expresses the lateral distance of the car from the center of the road
+*eψ* is the orientation error which is the angular difference between the orientation of the car and the tangential angle of the route evaluated at the location of the car
 
 ### Controls (actuators)
 
+The control input vector contains the following variables: [δ, α], where:
+*δ* is the steering angle
+*α* is the acceleration modeling the throttle if positive or the brakes if negative
 
+Note that If δ is positive we rotate counter-clockwise, or turn left. In the simulator however, a positive value implies a right turn and a negative value implies a left turn. This is incompatibility is taken into consideration in the code.
 
-### Kinematic model
+Since our model is nonholonomic i.e. the car cannot move in arbitrary directions, we have contraints both in steering angle and the acceleration:
+
+\delta \in [-25\degree, 25\degree]
+
+![img](http://latex.codecogs.com/svg.latex?%5Cdelta%20%5Cin%20%5B-25%5Cdegree%2C%2025%5Cdegree%5D)
+
+\alpha \in [-1, 1]
+
+![img](http://latex.codecogs.com/svg.latex?%5Calpha%20%5Cin%20%5B-1%2C%201%5D)
+
+### Vehicle physical characteristics
+
+*Lf* measures the distance between the front of the vehicle and its center of gravity (CoG). The larger the vehicle, the slower the turn rate.
+
+### Equations
+
+Assuming that we have defined the state of the vehicle at time *t*, the following equations provide the state of the vehicle including the errors at the next time step, *t+1*:
 
 ![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D%20%3D%20x_t%20%2B%20v_t%20*%20cos(%5Cpsi_t)%20*%20dt)
 
@@ -40,7 +54,7 @@ The state vector is described contains the following variables: [x, y, ψ, v, ct
 
 ![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
 
-### Error calculations at timestep t
+Error calculations at timestep t
 
 ![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20-%20%20%5Cpsi%7Bdes%7D_t)
 
@@ -48,15 +62,13 @@ The state vector is described contains the following variables: [x, y, ψ, v, ct
 
 ![img](http://latex.codecogs.com/svg.latex?cte_t%20%3D%20f(x_t)%20-%20y_t)
 
-### Error calculations at timestep (t + 1)
-
-Depending on the previous step
+Error calculations at timestep *t + 1*
 
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20e%7B%5Cpsi%7D_t%20%2B%20%5Cfrac%7Bv_t%20%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
 ![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20cte_t%20%2B%20v_t%20*%20sin(e%7B%5Cpsi%7D_t)%20*%20dt)
 
-Expanded version with the previous step substituted in the equations above
+Expanded version with the error calculations with the timestep *t* substituted in the equations above
 
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t))%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
@@ -65,6 +77,14 @@ Expanded version with the previous step substituted in the equations above
 ## Latency
 
 The latency of 100 msec is adapted into the system. For any given state, we update the car's position by running the motion equations for the duration of the latency. The state that is caculated through this procedure is fed to the MPC controller as the present state. Because the dt hyperparameter of the MPC controller is in the order of 100msec, the latency is handled by shifting the timestep during the MPC update by 1.
+
+## Polynomial of the 3rd order
+
+The desired trajectory is passed as an input from the path planning block as a third order polynomial. In the simulator this line is depicted as yellow. We use this polynomial to extract the position of the car through the MPC.
+
+![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
+
+![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
 ## Dependencies
 

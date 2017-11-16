@@ -82,15 +82,15 @@ int main() {
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
           /*
+          Polynomial of the 3rd order
+          f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
+          f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
+           
           Kinematic model
           x_t+1 = x_t + υ_t * cos(ψ_t) * dt
           y_t+1 = y_t + υ_t * sin(ψ_t) * dt
           ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
           υ_t+1 = υ_t + α * dt
-
-          Polynomial of the 3rd order
-          f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
-          f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
 
           Error calculations at t
           eψ_t = ψ_t - ψdes_t
