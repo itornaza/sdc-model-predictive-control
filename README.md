@@ -1,4 +1,4 @@
-# Model Predictive Control
+# Model Predictive Control - MPC
 
 ## Introduction
 
@@ -6,13 +6,35 @@ This project implements Model Predictive Control to drive the car around the tra
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
+## MPC Overview
+
+The Model Predictive Controller calculates simulated actuator inputs, predicts the resulting trajectories and selects the trajectory with the minimum cost. In order to do so, It uses as input the desired trajectory and the current state of the vehicle. In a way, MPC reduces the control problem to an optimization problem of finding the best trajectory candidate.
+
+Imagine that we know the current state and the reference trajectory that we want to follow. We optimize our actuator inputs each step in time to minimize the cost of our predicted trajectory. Once we find the lowest cost trajectory we implement the respective actuateors and throw away everything else.
+
+At the heart of the MPC lie  the cost estimation functions. In essence these functions declare which errors are to be penalized the most in order to safely drive the vehicle. In this manner, we allow for non-critical errors to occur while are keeping critical errors to a minimum.
+
+## Hyperparameters
+
+The MPC defines the prediction horizon *T* which is the duration over which future predictions are made.
+
+![img](http://latex.codecogs.com/svg.latex?T%20%3D%20N%20*%20dt)
+
+Where,
+
+*T* is the prediction horizon which should be a few seconds at most. Beyond that horizon, the environment will change enough that it won't make sense to predict any further into the future
+
+*N* is the number of steps in the prediction horizon. It determines the number of variables optimized by the MPC and is a major driver of computational cost
+
+*dt* is the timestep duration i.e. time elapsed between actuations. Larger values of dt result in less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory
+
 ## Kinematic model
 
 In order to implement the controller we first have to define a model of the vehicle dynamics and constraints. In this case we use a simple kinematic model that ignores tire forces, gravity and mass. While this simplification reduces the accuracy of the motion prediction, it makes it more tracktable. In addition, it is a good approximation of the actual vehicle dynamics in low and moderate speeds.
 
 ### State
 
-The state vector is described contains the following variables: [x, y, ψ, v, cte, eψ], where:
+The state vector is described contains the following variables: [*x, y, ψ, v, cte, eψ*], where:
 *x* is the position of the car on the x-axis
 *y* is  the position of the car on the y-axis
 *ψ* is the orientation of the car
@@ -22,7 +44,7 @@ The state vector is described contains the following variables: [x, y, ψ, v, ct
 
 ### Controls (actuators)
 
-The control input vector contains the following variables: [δ, α], where:
+The control input vector contains the following variables: [*δ, α*], where:
 *δ* is the steering angle
 *α* is the acceleration modeling the throttle if positive or the brakes if negative
 
@@ -30,11 +52,7 @@ Note that If δ is positive we rotate counter-clockwise, or turn left. In the si
 
 Since our model is nonholonomic i.e. the car cannot move in arbitrary directions, we have contraints both in steering angle and the acceleration:
 
-\delta \in [-25\degree, 25\degree]
-
 ![img](http://latex.codecogs.com/svg.latex?%5Cdelta%20%5Cin%20%5B-25%5Cdegree%2C%2025%5Cdegree%5D)
-
-\alpha \in [-1, 1]
 
 ![img](http://latex.codecogs.com/svg.latex?%5Calpha%20%5Cin%20%5B-1%2C%201%5D)
 
