@@ -23,8 +23,11 @@ Polynomial of the 3rd order
 ![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
 Error calculations at t
-e\psi_t = \psi_{t} \textminus \psides_t
+
+e\psi_t = \psi_{t} - \psi{des}_t
+
 \psides_t = arctan(f^\prime(x_t))
+
 cte_t = f(x_t) - y_t
 
 ![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20%5Ctextminus%20%5Cpsides_t)
