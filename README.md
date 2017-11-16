@@ -8,8 +8,9 @@ The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896
 
 Here is a [youtube video](https://youtu.be/mcfGi2hPtuU) showing the car moving around the track under the MPC controller. The yellow line is the desired trajectory and the green line is the MPC optimum trajectory.
 
-[![Alt text](https://img.youtu.be/vi/VID/0.jpg)](https://www.youtu.be/watch?v=mcfGi2hPtuU)
-
+[//]: # (Image References)
+[image1]: ./mpc.png "MPC controller"
+![alt text][image1]
 
 ## MPC Overview
 
