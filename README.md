@@ -24,7 +24,7 @@ Polynomial of the 3rd order
 
 Error calculations at t
 
-e\psi_t = \psi_{t} - \psi{des}_t
+e\psi_t = \psi_{t} +  \psi^des_t
 
 \psides_t = arctan(f^\prime(x_t))
 
