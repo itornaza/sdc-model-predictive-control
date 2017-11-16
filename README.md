@@ -6,7 +6,29 @@ This project implements Model Predictive Control to drive the car around the tra
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
-## Equations that describe the model
+## Controller overview
+
+## Polynomial of the 3rd order
+
+![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
+
+![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
+
+## Kinematic model
+
+### State
+
+The state vector is described contains the following variables: [x, y, ψ, v, cte, eψ], where:
+*x* is the position of the car on the x-axis
+*y* is  the position of the car on the y-axis
+*ψ* is the orientation of the car
+*v* is the speed of the car
+*cte* is the ctoss-track error
+*eψ* is the orientation error
+
+### Controls (actuators)
+
+
 
 ### Kinematic model
 
@@ -17,12 +39,6 @@ The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896
 ![img](http://latex.codecogs.com/svg.latex?%5Cpsi_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
 ![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
-
-### Polynomial of the 3rd order
-
-![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
-
-![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
 ### Error calculations at timestep t
 
@@ -45,6 +61,10 @@ Expanded version with the previous step substituted in the equations above
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t))%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
 ![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20f(x_t)%20-%20y_t%20%2B%20v_t%20*%20sin(y_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t)))%20*%20dt)
+
+## Latency
+
+The latency of 100 msec is adapted into the system. For any given state, we update the car's position by running the motion equations for the duration of the latency. The state that is caculated through this procedure is fed to the MPC controller as the present state. Because the dt hyperparameter of the MPC controller is in the order of 100msec, the latency is handled by shifting the timestep during the MPC update by 1.
 
 ## Dependencies
 
