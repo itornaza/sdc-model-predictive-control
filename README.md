@@ -46,9 +46,9 @@ e{\psi}_{t+1} = \psi_t - arctan(f^{\prime}(x_t)) + \frac{v_t}{L_f} * \delta_t * 
 
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t))%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
-cte_{t+1} = f(x_t) - y_t + v_t * sin(y_t - arctan[f^{\prime}(x_t))] * dt
+cte_{t+1} = f(x_t) - y_t + v_t * sin(y_t - arctan(f^{\prime}(x_t))) * dt
 
-![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20f(x_t)%20-%20y_t%20%2B%20v_t%20*%20sin(y_t%20-%20arctan%5Bf%5E%7B%5Cprime%7D(x_t))%5D%20*%20dt%0A)
+![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20f(x_t)%20-%20y_t%20%2B%20v_t%20*%20sin(y_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t)))%20*%20dt)
 
 ## Dependencies
 
