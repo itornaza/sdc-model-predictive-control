@@ -27,7 +27,7 @@ Error calculations at t+1
 eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
 cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 
-![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D+%3Dx_t+%2B+v_t+%2Acos%28%5Cpsi_t%29%2Adt)
+![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D%20%3D%20x_t%20%2B%20v_t%20*%20cos(%5Cpsi_t)%20*%20dt)
 
 ## Dependencies
 
