@@ -11,8 +11,13 @@ x_t+1 = x_t + υ_t * cos(ψ_t) * dt
 x_{t+1} = x_t + v_t * cos(\psi_t) * dt
 
 y_t+1 = y_t + υ_t * sin(ψ_t) * dt
+y_{t+1} = y_t + v_t * sin(\psi_t) * dt
+
 ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
+\psi_{t+1} = \psi_t + \frac{v_t}{L_f} * \delta_t * dt
+
 υ_t+1 = υ_t + α * dt
+v_{t+1} = v_t + \alpha * dt
 
 Polynomial of the 3rd order
 f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
@@ -28,6 +33,20 @@ eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
 cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
 
 ![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D%20%3D%20x_t%20%2B%20v_t%20*%20cos(%5Cpsi_t)%20*%20dt)
+
+![img](http://latex.codecogs.com/svg.latex?y_%7Bt%2B1%7D%20%3D%20y_t%20%2B%20v_t%20*%20sin(%5Cpsi_t)%20*%20dt)
+
+![img](http://latex.codecogs.com/svg.latex?%5Cpsi_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
+
+![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
+
+![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?)
+
+![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?)
 
 ## Dependencies
 
