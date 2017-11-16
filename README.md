@@ -6,7 +6,9 @@ This project implements Model Predictive Control to drive the car around the tra
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
-Kinematic model
+## Equations that describe the model
+
+### Kinematic model
 
 ![img](http://latex.codecogs.com/svg.latex?x_%7Bt%2B1%7D%20%3D%20x_t%20%2B%20v_t%20*%20cos(%5Cpsi_t)%20*%20dt)
 
@@ -16,19 +18,13 @@ Kinematic model
 
 ![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
 
-Polynomial of the 3rd order
+### Polynomial of the 3rd order
 
 ![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
 
 ![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
-Error calculations at timestep t
-
-e\psi_t = \psi_{t} -  \psi{des}_t
-
-\psi{des}_t = arctan(f^{\prime}(x_t))
-
-cte_t = f(x_t) - y_t
+### Error calculations at timestep t
 
 ![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20-%20%20%5Cpsi%7Bdes%7D_t)
 
@@ -36,7 +32,7 @@ cte_t = f(x_t) - y_t
 
 ![img](http://latex.codecogs.com/svg.latex?cte_t%20%3D%20f(x_t)%20-%20y_t)
 
-Error calculations at timestep (t + 1)
+### Error calculations at timestep (t + 1)
 
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20e%7B%5Cpsi%7D_t%20%2B%20%5Cfrac%7Bv_t%20%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
