@@ -24,13 +24,13 @@ Polynomial of the 3rd order
 
 Error calculations at t
 
-e\psi_t = \psi_{t} +  \psi{des}_t
+e\psi_t = \psi_{t} -  \psi{des}_t
 
 \psides_t = arctan(f^\prime(x_t))
 
 cte_t = f(x_t) - y_t
 
-![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20%2B%20%20%5Cpsi%7Bdes%7D_t)
+![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_%7Bt%7D%20-%20%20%5Cpsi%7Bdes%7D_t)
 
 ![img](http://latex.codecogs.com/svg.latex?%5Cpsides_t%20%3D%20arctan(f%5Cprime(x_t)))
 
