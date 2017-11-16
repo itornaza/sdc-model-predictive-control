@@ -17,24 +17,19 @@ Kinematic model
 ![img](http://latex.codecogs.com/svg.latex?v_%7Bt%2B1%7D%20%3D%20v_t%20%2B%20%5Calpha%20*%20dt)
 
 Polynomial of the 3rd order
-f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
-f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
-
-f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
-f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
 
 ![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
 
 ![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
 Error calculations at t
-eψ_t = ψ_t - ψdes_t
-ψdes_t = arctan(f'(x_t))
+e\psi_t = \psi_t - \psides_t
+\psides_t = arctan(f\prime(x_t))
 cte_t = f(x_t) - y_t
 
-![img](http://latex.codecogs.com/svg.latex?)
-![img](http://latex.codecogs.com/svg.latex?)
-![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?e%5Cpsi_t%20%3D%20%5Cpsi_t%20-%20%5Cpsides_t)
+![img](http://latex.codecogs.com/svg.latex?%5Cpsides_t%20%3D%20arctan(f%5Cprime(x_t)))
+![img](http://latex.codecogs.com/svg.latex?cte_t%20%3D%20f(x_t)%20-%20y_t)
 
 Error calculations at t+1
 eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
