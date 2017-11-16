@@ -9,6 +9,7 @@
 #include "json.hpp"
 #include "MPC.h"
 #include "helpers.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -38,13 +39,9 @@ int main() {
         string event = j[0].get<string>();
         if (event == "telemetry") {
           
-          // TODO: Use the values from constants.h after resolving symbol issues
-          const double latency = 0.1; // In seconds
-          const double Lf = 2.67;
-          
-          //-------------------------
+          //********************************************************************
           // Get data from simulator
-          //-------------------------
+          //********************************************************************
           
           // Detail listing of simulator responses at:
           // https://github.com/udacity/CarND-MPC-Project/blob/master/DATA.md
@@ -61,9 +58,9 @@ int main() {
           double cte;
           double epsi;
           
-          //-------------------------
+          //********************************************************************
           // Calculate {δ, α}
-          //-------------------------
+          //********************************************************************
           
           // Transform points (ptsx, ptsy) from map to car coordinates
           for (int ix = 0; ix < ptsx.size(); ++ix) {
@@ -82,22 +79,22 @@ int main() {
           auto coeffs = polyfit(ptsx_transform, ptsy_transform, 3);
           
           /*
-          Polynomial of the 3rd order
+          Polynomial of the 3rd order:
           f(x) = a_3 * x^3 + a_2 * x^2 + a_1 * x + a_0
           f'(x) = 3 * a_3 * x^2 + 2 * a_2 * x + a_1
            
-          Kinematic model
+          Kinematic model:
           x_t+1 = x_t + υ_t * cos(ψ_t) * dt
           y_t+1 = y_t + υ_t * sin(ψ_t) * dt
           ψ_t+1 = ψ_t + (υ_t / Lf) * δ_t * dt
           υ_t+1 = υ_t + α * dt
 
-          Error calculations at t
+          Error calculations at t:
           eψ_t = ψ_t - ψdes_t
           ψdes_t = arctan(f'(x_t))
           cte_t = f(x_t) - y_t
 
-          Error calculations at t+1
+          Error calculations at t+1:
           eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
           cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
           */
@@ -107,8 +104,8 @@ int main() {
           px = 0.0;
           py = 0.0;
           psi = 0.0;
-          v *= 0.44704; // Convert to m/sec for the calculations
-          cte = coeffs[0]; // TODO: same as polyeval(coeffs, 0.0);
+          v *= Cnst::mph_to_m_per_sec; // m/sec for the calculations
+          cte = coeffs[0];
           epsi = -atan(coeffs[1]);
           
           // Adjust the state variables to account for latency (as dt)
@@ -116,12 +113,12 @@ int main() {
           // In the simulator however, a positive value implies a right turn and
           // a negative value implies a left turn. Thus, we multiply the
           // steering value by -1 for compatibility with the above equations
-          px = v * latency; // cos(0.0) = 1.0
-          py = 0.0; // sin(0.0) = 0.0
-          psi = v * (-steer_value) * latency / Lf;
-          v += throttle_value * latency;
-          cte += v * sin(epsi) * latency;
-          epsi += v * (-steer_value) * latency / Lf;
+          px = v * Cnst::latency; // reduce as cos(0.0) = 1.0
+          py = 0.0; // reduce as sin(0.0) = 0.0
+          psi = v * (-steer_value) * Cnst::latency / Cnst::Lf;
+          v += throttle_value * Cnst::latency;
+          cte += v * sin(epsi) * Cnst::latency;
+          epsi += v * (-steer_value) * Cnst::latency / Cnst::Lf;
           
           // Define the state
           Eigen::VectorXd state(6);
@@ -131,9 +128,9 @@ int main() {
           // between [-1, 1] and are contained in the returned vars array
           auto vars = mpc.Solve(state, coeffs);
           
-          //-------------------------
+          //********************************************************************
           // Lines to display
-          //-------------------------
+          //********************************************************************
          
           // Set up the waypoints/reference yellow line
           vector<double> next_x_vals;
@@ -156,9 +153,9 @@ int main() {
             }
           }
           
-          //-------------------------
+          //********************************************************************
           // Send data to simulator
-          //-------------------------
+          //********************************************************************
           
           // Prepare the json message
           json msgJson;
@@ -186,8 +183,7 @@ int main() {
           cout << msg << endl;
           
           // Latency simulation by sleeping!
-          this_thread::sleep_for(chrono::milliseconds(
-                                 static_cast<int>(latency * 1000)));
+          this_thread::sleep_for(chrono::milliseconds((Cnst::latency_msec)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // End - Telemetry
       } else {

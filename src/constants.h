@@ -2,10 +2,12 @@
 #define MPC_CONSTANTS_H_
 
 namespace Cnst {
-
-  //-----------------
+  
+  const double mph_to_m_per_sec = 0.44704;
+  
+  //****************************************************************************
   // Hyperparameters
-  //-----------------
+  //****************************************************************************
 
   // Prediction horizon: T = N * dt
   // It should be a few seconds at most. Beyond that horizon, the environment
@@ -23,9 +25,16 @@ namespace Cnst {
   // Larger values of dt result in less frequent actuations, which makes it
   // harder to accurately approximate a continuous reference trajectory. This
   // is sometimes called `discritization error`
-  const double dt = 0.12;
+  const double dt = 0.135;
+  // Values tested
+  // 0.8  - tested - failed
+  // 0.10 - tested - failed
+  // 0.11 - tested - failed
+  // 0.12 - tested - failed
+  // 0.13 - tested - almost ok
+  // 0.135- tested - ok
+  // 0.14 - tested - ok
   
-  // TODO: Move to --> main
   // System latency from control signals to actuators response
   // In a real car, an actuation command won't execute instantly. There will
   // be a delay as the command propagates through the system. A realistic delay
@@ -34,7 +43,8 @@ namespace Cnst {
   // run a simulation using the vehicle model starting from the current state
   // for the duration of the latency. The resulting state from the simulator
   // is the new initial state for MPC
-  // double latency = 0;
+  const double latency = 0.1; // In seconds
+  const int latency_msec = 0.1 * 1000; // 100 msec as per the rubric
 
   // This value assumes the model presented in the classroom is used. It was
   // obtained by measuring the radius formed by running the vehicle in the
@@ -47,7 +57,8 @@ namespace Cnst {
   // References (i.e. our objectives)
   const double ref_cte = 0.0;
   const double ref_epsi = 0.0;
-  const double ref_v = 40.0 * 0.44704; // Converted from mph to m/sec
+  const double ref_v = 100.0 * mph_to_m_per_sec; // m/sec for the calculations
+  // Values tested for speed from 40 to 100mph
   
   // Cost coefficients
   // The larger the coefficient of each cost, the lower the value we are willing
@@ -55,24 +66,25 @@ namespace Cnst {
   // be the one with the lower cost value. Hence we heavily penalize the cost
   // functions with large coefficients but we are more reluctant to accept costs
   // with small coefficients
-  const int cte_param = 3000; //2000;
-  const int epsi_param = 3000; //2000;
+  const int cte_param = 3000;
+  const int epsi_param = 4000;
   const int v_param = 1;
-  const int delta_param = 7000; //5;
-  const int a_param = 1; //5;
-  const int delta_seq_param = 6000; //200;
-  const int a_seq_param = 1; //10;
-
-  // TODO: Document
+  const int delta_param = 5000;
+  const int a_param = 1;
+  const int delta_seq_param = 7000;
+  const int a_seq_param = 1;
+  // Values tested
+  // cte   epsi  v    δ   α   dδ   dα
   // 3000, 3000, 1, 6000, 1, 5000, 1 -- 1st round ok but then crashes
   // 3000, 3000, 1, 2000, 1, 3000, 1 -- Crashes on first round
   // 3000, 3000, 1, 2000, 1, 5000, 1 -- Crashes on first round
   // 3000, 3000, 1, 7000, 1, 3000, 1 -- Crashes on first round
   // 3000, 3000, 1, 7000, 1, 6000, 1 -- 1st round ok but then crashes, better
+  // 3000, 3000, 1, 5000, 1, 7000, 1 -- 1st round ok but then crashes, better
   
-  //-----------------
+  //****************************************************************************
   // Array indices
-  //-----------------
+  //****************************************************************************
 
   // The solver takes all the state variables and actuator variables in a
   // singular vector. Thus, we should establish when one variable starts and
