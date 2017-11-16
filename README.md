@@ -34,9 +34,21 @@ The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896
 
 ### Error calculations at timestep (t + 1)
 
+Depending on the previous step
+
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20e%7B%5Cpsi%7D_t%20%2B%20%5Cfrac%7Bv_t%20%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
 ![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20cte_t%20%2B%20v_t%20*%20sin(e%7B%5Cpsi%7D_t)%20*%20dt)
+
+Expanded version with the previous step substituted in the equations above
+
+e{\psi}_{t+1} = \psi_t - arctan(f^{\prime}(x_t)) + \frac{v_t}{L_f} * \delta_t * dt
+
+![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20%5Cpsi_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t))%20%2B%20%5Cfrac%7Bv_t%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
+
+cte_t+1 = f(x_t) - y_t + υ_t * sin(y_t - arctan(f^{\prime}(x_t))) * dt
+
+![img](http://latex.codecogs.com/svg.latex?cte_t%2B1%20%3D%20f(x_t)%20-%20y_t%20%2B%20%CF%85_t%20*%20sin(y_t%20-%20arctan(f%5E%7B%5Cprime%7D(x_t)))%20*%20dt)
 
 ## Dependencies
 
