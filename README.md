@@ -22,7 +22,7 @@ Polynomial of the 3rd order
 
 ![img](http://latex.codecogs.com/svg.latex?f%27(x)%20%3D%203%20*%20a_3%20*%20x%5E2%20%2B%202%20*%20a_2%20*%20x%20%2B%20a_1)
 
-Error calculations at t
+Error calculations at timestep t
 
 e\psi_t = \psi_{t} -  \psi{des}_t
 
@@ -36,11 +36,7 @@ cte_t = f(x_t) - y_t
 
 ![img](http://latex.codecogs.com/svg.latex?cte_t%20%3D%20f(x_t)%20-%20y_t)
 
-Error calculations at t+1
-
-e{\psi}_{t+1} = e{\psi}_t + \frac{v_t }{L_f} * \delta_t * dt
-
-cte_{t+1} = cte_t + v_t * sin(e{\psi}_t) * dt
+Error calculations at timestep (t + 1)
 
 ![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20e%7B%5Cpsi%7D_t%20%2B%20%5Cfrac%7Bv_t%20%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
 
