@@ -38,12 +38,13 @@ cte_t = f(x_t) - y_t
 
 Error calculations at t+1
 
-eψ_t+1 = eψ_t + (υ_t / Lf) * δ_t * dt
-cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
+e{\psi}_{t+1} = e{\psi}_t + \frac{v_t }{L_f} * \delta_t * dt
 
-![img](http://latex.codecogs.com/svg.latex?)
+cte_{t+1} = cte_t + v_t * sin(e{\psi}_t) * dt
 
-![img](http://latex.codecogs.com/svg.latex?)
+![img](http://latex.codecogs.com/svg.latex?e%7B%5Cpsi%7D_%7Bt%2B1%7D%20%3D%20e%7B%5Cpsi%7D_t%20%2B%20%5Cfrac%7Bv_t%20%7D%7BL_f%7D%20*%20%5Cdelta_t%20*%20dt)
+
+![img](http://latex.codecogs.com/svg.latex?cte_%7Bt%2B1%7D%20%3D%20cte_t%20%2B%20v_t%20*%20sin(e%7B%5Cpsi%7D_t)%20*%20dt)
 
 ## Dependencies
 
