@@ -26,7 +26,7 @@ Error calculations at t
 
 e\psi_t = \psi_{t} -  \psi{des}_t
 
-\psides_t = arctan(f^\prime(x_t))
+\psi{des}_t = arctan(f^{\prime}(x_t))
 
 cte_t = f(x_t) - y_t
 
