@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This project implements Model Predictive Control to drive the car around the track. The cross track error is not provided by the simulator and is calculated from the code. Additionally, there's a 100 millisecond latency between actuations commands on top of the connection latency.
+This project implements a Model Predictive Controller to drive the car around the track. The cross track error is not provided by the simulator and is calculated from the code. Additionally, there's a 100 millisecond latency between actuations commands on top of the connection latency.
 
 The project rubric can be found [here](https://review.udacity.com/#!/rubrics/896/view)
 
-Here is a [youtube video](https://youtu.be/mcfGi2hPtuU) showing the car moving around the track under the MPC controller. The yellow line is the desired trajectory and the green line is the MPC optimum trajectory.
+ In this [youtube video](https://youtu.be/mcfGi2hPtuU) you can watch the car moving around the track under the MPC controller guidance. The yellow line depicts the desired trajectory and the green line is the MPC optimum trajectory.
 
 [//]: # (Image References)
 [image1]: ./mpc.png "MPC controller"
@@ -14,27 +14,25 @@ Here is a [youtube video](https://youtu.be/mcfGi2hPtuU) showing the car moving a
 
 ## MPC Overview
 
-The Model Predictive Controller calculates simulated actuator inputs, predicts the resulting trajectories and selects the trajectory with the minimum cost. In order to do so, It uses as input the desired trajectory and the current state of the vehicle. In a way, MPC reduces the control problem to an optimization problem of finding the best trajectory candidate.
+The Model Predictive Controller calculates simulated actuator inputs, predicts the resulting trajectories and selects the trajectory with the minimum cost. In order to do so, It uses the desired trajectory from the path planning block and the current state of the vehicle as inputs. In a way, MPC reduces the control problem to an optimization problem of finding the best trajectory candidate.
 
-Imagine that we know the current state and the reference trajectory that we want to follow. We optimize our actuator inputs each step in time to minimize the cost of our predicted trajectory. Once we find the lowest cost trajectory we implement the respective actuateors and throw away everything else.
+In simple terms, imagine that we know the current state and the reference trajectory that we want to follow. We optimize our actuator inputs each step in time to minimize the cost of our predicted trajectory. Once we find the lowest cost trajectory we implement the respective actuators and throw away everything else.
 
-At the heart of the MPC lie  the cost estimation functions. In essence these functions declare which errors are to be penalized the most in order to safely drive the vehicle. In this manner, we allow for non-critical errors to occur while are keeping critical errors to a minimum.
+At the heart of the MPC lie  the cost estimation functions. In essence these functions declare which errors are to be penalized the most in order to safely drive the vehicle. Our task is to allow for non-critical errors to occur while are keeping critical errors to a minimum.
 
 ## Hyperparameters
 
-The MPC defines the prediction horizon *T* which is the duration over which future predictions are made.
+The MPC defines the prediction horizon *T* which is the duration over which future predictions are made. It should be a few seconds at most. Beyond that horizon, the environment will change enough that it won't make sense to predict any further into the future.
 
 ![img](http://latex.codecogs.com/svg.latex?T%20%3D%20N%20*%20dt)
 
 Where,
 
-*T* is the prediction horizon which should be a few seconds at most. Beyond that horizon, the environment will change enough that it won't make sense to predict any further into the future
+*N* is the number of steps in the prediction horizon. It determines the number of variables optimized by the MPC and is a major driver of computational cost.
 
-*N* is the number of steps in the prediction horizon. It determines the number of variables optimized by the MPC and is a major driver of computational cost
+*dt* is the timestep duration i.e. the time elapsed between actuations. Larger values of *dt* result in less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory.
 
-*dt* is the timestep duration i.e. time elapsed between actuations. Larger values of dt result in less frequent actuations, which makes it harder to accurately approximate a continuous reference trajectory
-
-During the implementation various values for dt were tested spanning from 0.8 to 1.4. However, 0.135 was found to help the model behave better than the other values even at high speeds such as 100mph.
+During the implementation various values for *dt* were tested spanning from 0.8 to 1.4. However, 0.135 was found to help the model behave better than the other values from low speeds such as 40 mph to moderate speeds up to 100mph.
 
 ## Kinematic model
 
@@ -42,21 +40,29 @@ In order to implement the controller we first have to define a model of the vehi
 
 ### State
 
-The state vector is described contains the following variables: [*x, y, ψ, v, cte, eψ*], where:
+The state vector contains the following variables: [*x, y, ψ, v, cte, eψ*], where:
+
 *x* is the position of the car on the x-axis
+
 *y* is  the position of the car on the y-axis
+
 *ψ* is the orientation of the car
+
 *v* is the speed of the car
+
 *cte* is the ctoss-track error which expresses the lateral distance of the car from the center of the road
+
 *eψ* is the orientation error which is the angular difference between the orientation of the car and the tangential angle of the route evaluated at the location of the car
 
-### Controls (actuators)
+### Controls or actuators
 
 The control input vector contains the following variables: [*δ, α*], where:
+
 *δ* is the steering angle
+
 *α* is the acceleration modeling the throttle if positive or the brakes if negative
 
-Note that If δ is positive we rotate counter-clockwise, or turn left. In the simulator however, a positive value implies a right turn and a negative value implies a left turn. This is incompatibility is taken into consideration in the code.
+Note that If *δ* is positive we rotate counter-clockwise, or turn left. In the simulator however, a positive value implies a right turn and a negative value implies a left turn. This is incompatibility is corrected in the controller's implementation.
 
 Since our model is nonholonomic i.e. the car cannot move in arbitrary directions, we have contraints both in steering angle and the acceleration:
 
@@ -66,7 +72,7 @@ Since our model is nonholonomic i.e. the car cannot move in arbitrary directions
 
 ### Vehicle physical characteristics
 
-*Lf* measures the distance between the front of the vehicle and its center of gravity (CoG). The larger the vehicle, the slower the turn rate.
+*Lf* measures the distance between the front of the vehicle and its Center of Gravity (CoG). The larger the vehicle, the slower the turn rate.
 
 ### Equations
 
@@ -102,11 +108,11 @@ Expanded version with the error calculations with the timestep *t* substituted i
 
 ## Latency
 
-The latency of 100 msec is adapted into the system. For any given state, we update the car's position by running the motion equations for the duration of the latency. The state that is caculated through this procedure is fed to the MPC controller as the present state. Because the dt hyperparameter of the MPC controller is in the order of 100msec, the latency is handled by shifting the timestep during the MPC update by 1.
+The latency of 100 msec is adapted into the system. For any given state, we update the car's position by running the motion equations for the duration of the latency. The state that is caculated through this procedure is then fed to the MPC controller as the present state. Because the *dt* hyperparameter of the MPC controller is in the order of 100msec, the latency is handled by shifting the timestep during the MPC update by 1.
 
 ## Polynomial of the 3rd order
 
-The desired trajectory is passed as an input from the path planning block as a third order polynomial. In the simulator this line is depicted as yellow. We use this polynomial to extract the position of the car through the MPC.
+The desired trajectory is passed as an input from the path planning block as a third order polynomial. In the simulator this line is depicted as yellow. We use this polynomial to extract the position of the car through the MPC implementation.
 
 ![img](http://latex.codecogs.com/svg.latex?f(x)%20%3D%20a_3%20*%20x%5E3%20%2B%20a_2%20*%20x%5E2%20%2B%20a_1%20*%20x%20%2B%20a_0)
 
