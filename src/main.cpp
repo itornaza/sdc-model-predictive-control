@@ -99,26 +99,36 @@ int main() {
           cte_t+1 = cte_t + υ_t * sin(eψ_t) * dt
           */
           
-          // State variables without latency
-          // Substituting to the equations above with px = py = ψ = 0
+          // 1. State variables without latency
+          
+          // Substituting to the equations above with the new origin values for
+          // px, py, ψ equal to zero
           px = 0.0;
           py = 0.0;
           psi = 0.0;
-          v *= Cnst::mph_to_m_per_sec; // m/sec for the calculations
+          
+          // Convert to speed to m/sec
+          v *= Ct::mph_to_m_per_sec;
+          
+          // Calculate the errors. Using the above error equations at time t and
+          // the polynomial equations at the new origin (0, 0)
           cte = coeffs[0];
           epsi = -atan(coeffs[1]);
           
-          // Adjust the state variables to account for latency (as dt)
+          // 2. State variables with latency
+          
+          // Adjust the state variables to account for latency (as dt) using the
+          // error equations above at time t+1
           // NOTE: If δ is positive we rotate counter-clockwise, or turn left.
           // In the simulator however, a positive value implies a right turn and
           // a negative value implies a left turn. Thus, we multiply the
           // steering value by -1 for compatibility with the above equations
-          px = v * Cnst::latency; // reduce as cos(0.0) = 1.0
+          px = v * Ct::latency; // reduce as cos(0.0) = 1.0
           py = 0.0; // reduce as sin(0.0) = 0.0
-          psi = v * (-steer_value) * Cnst::latency / Cnst::Lf;
-          v += throttle_value * Cnst::latency;
-          cte += v * sin(epsi) * Cnst::latency;
-          epsi += v * (-steer_value) * Cnst::latency / Cnst::Lf;
+          psi = v * (-steer_value) * Ct::latency / Ct::Lf;
+          v += throttle_value * Ct::latency;
+          cte += v * sin(epsi) * Ct::latency;
+          epsi += v * (-steer_value) * Ct::latency / Ct::Lf;
           
           // Define the state
           Eigen::VectorXd state(6);
@@ -183,7 +193,7 @@ int main() {
           cout << msg << endl;
           
           // Latency simulation by sleeping!
-          this_thread::sleep_for(chrono::milliseconds((Cnst::latency_msec)));
+          this_thread::sleep_for(chrono::milliseconds((Ct::latency_msec)));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         } // End - Telemetry
       } else {
