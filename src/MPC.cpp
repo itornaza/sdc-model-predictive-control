@@ -100,7 +100,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   constraints_upperbound[Ct::epsi_start] = epsi;
   
   // Object that computes objective and constraints
-  FG_eval::FG_eval fg_eval(coeffs);
+  FG_eval fg_eval(coeffs);
 
   // Options for IPOPT solver
   string options;
